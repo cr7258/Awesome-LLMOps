@@ -52,13 +52,13 @@ def get_repo_info(owner: str, repo: str) -> Dict[str, Any]:
     return response.json()
 
 
-def generate_entry(repo_info: Dict[str, Any], repo_url: str, custom_name: Optional[str]=None) -> Tuple[str, str]:
+def generate_entry(repo_info: Dict[str, Any], repo_url: str, project_name: Optional[str]=None) -> Tuple[str, str]:
     """Generate formatted entry for README.md.
     
     Args:
         repo_info: Repository information from GitHub API
         repo_url: GitHub repository URL
-        custom_name: Optional custom project name, if None will use repo name
+        project_name: The project name
         
     Returns:
         A tuple containing:
@@ -69,9 +69,6 @@ def generate_entry(repo_info: Dict[str, Any], repo_url: str, custom_name: Option
     
     # Extract owner and repo for shields.io URLs
     owner, repo = parse_github_url(repo_url)
-    
-    # Use custom name if provided, otherwise use repo name
-    project_name = custom_name if custom_name else repo_info.get('name')
     
     # Generate shields.io URLs
     stars_badge = f"![Stars](https://img.shields.io/github/stars/{owner}/{repo}.svg?style=flat&color=green)"
@@ -210,18 +207,17 @@ def main() -> None:
     """Main function to parse arguments and execute the script.
     
     Command line arguments:
-        section: The section to add the project to (e.g., "framework")
-        repo_url: The GitHub repository URL
-        --name/-n: Optional custom project name
+        --section/-s: The section to add the project to (e.g., "framework")
+        --repo_url/-r: The GitHub repository URL
+        --name/-n: Custom project name
 
     Example:
-        python awesome_add.py framework https://github.com/google/adk-python
-        python awesome_add.py framework https://github.com/google/adk-python --name "Agent Development Kit (ADK)"
+        python project_request.py --section framework --repo_url https://github.com/google/adk-python --name "Agent Development Kit (ADK)"
     """
     parser = argparse.ArgumentParser(description='Add a new project to the README.md file.')
-    parser.add_argument('section', help='The section to add the project to (e.g., "framework")')
-    parser.add_argument('repo_url', help='The GitHub repository URL')
-    parser.add_argument('--name', '-n', help='Custom project name (optional)')
+    parser.add_argument('--section', '-s', required=True, help='The section to add the project to (e.g., "framework")')
+    parser.add_argument('--repo_url', '-r', required=True, help='The GitHub repository URL')
+    parser.add_argument('--name', '-n', required=True, help='Custom project name')
     
     args = parser.parse_args()
     

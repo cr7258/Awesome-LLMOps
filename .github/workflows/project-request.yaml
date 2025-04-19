@@ -55,9 +55,9 @@ jobs:
             const repoUrlPattern = /\*\*GitHub Repository URL\*\*:\s*\n([\s\S]*?)(?:\n\s*\n|$)/;
             const repoUrl = extractInfoFromSection(bodyWithoutComments, repoUrlPattern);
             
-            // Extract Project Name (Optional)
-            // Match content between **Project Name** (Optional): and the next **
-            const projectNamePattern = /\*\*Project Name\*\* \(Optional\):\s*\n([\s\S]*?)(?:\n\s*\n\*\*|$)/;
+            // Extract Project Name (now required)
+            // Match content between **Project Name**: and the next **
+            const projectNamePattern = /\*\*Project Name\*\*:\s*\n([\s\S]*?)(?:\n\s*\n\*\*|$)/;
             const projectName = extractInfoFromSection(bodyWithoutComments, projectNamePattern);
             
             // Extract Section using a more generic approach
@@ -106,13 +106,13 @@ jobs:
             console.log(`Section: ${section}`);
             
             // Check if we have all required information
-            if (!repoUrl || !section) {
+            if (!repoUrl || !projectName || !section) {
               core.setFailed('Missing required information in the issue');
               await github.rest.issues.createComment({
                 issue_number: context.issue.number,
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                body: '❌ Could not process this request. Please make sure you have provided the GitHub Repository URL and selected a section.'
+                body: '❌ Could not process this request. Please make sure you have provided the GitHub Repository URL, project name, and selected a section.'
               });
               return false;
             }
@@ -130,11 +130,7 @@ jobs:
 
       - name: Run project_request.py
         run: |
-          if [ -n "${{ steps.parse-issue.outputs.project-name }}" ]; then
-            python project_request.py "${{ steps.parse-issue.outputs.section }}" "${{ steps.parse-issue.outputs.repo-url }}" --name "${{ steps.parse-issue.outputs.project-name }}"
-          else
-            python project_request.py "${{ steps.parse-issue.outputs.section }}" "${{ steps.parse-issue.outputs.repo-url }}"
-          fi
+          python project_request.py --section "${{ steps.parse-issue.outputs.section }}" --repo_url "${{ steps.parse-issue.outputs.repo-url }}" --name "${{ steps.parse-issue.outputs.project-name }}"
 
       - name: Commit changes
         run: |

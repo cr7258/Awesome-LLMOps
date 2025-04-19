@@ -9,7 +9,7 @@ assignees: ''
 **GitHub Repository URL**:
 <!-- Example: https://github.com/google/adk-python -->
 
-**Project Name** (Optional):
+**Project Name**:
 <!-- Example: Agent Development Kit (ADK) -->
 
 **Section to add this project**:
