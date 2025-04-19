@@ -1,0 +1,174 @@
+name: Project Request
+on:
+  issues:
+    types: [opened, edited]
+
+jobs:
+  process-project-request:
+    if: contains(github.event.issue.title, 'Project Request:')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Parse issue body
+        id: parse-issue
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const issueBody = context.payload.issue.body;
+            
+            // Function to extract information from a section
+            function extractInfoFromSection(body, sectionPattern) {
+              const section = body.match(sectionPattern);
+              if (!section || !section[1]) return null;
+              
+              // Split by lines and find the first non-empty line
+              const lines = section[1].split('\n');
+              for (const line of lines) {
+                const trimmedLine = line.trim();
+                if (trimmedLine && !trimmedLine.startsWith('<!--')) {
+                  return trimmedLine;
+                }
+              }
+              
+              return null;
+            }
+            
+            // First remove HTML comments from the issue body
+            const bodyWithoutComments = issueBody.replace(/<!--[\s\S]*?-->/g, '');
+            
+            // Extract GitHub Repository URL
+            const repoUrlPattern = /\*\*GitHub Repository URL\*\*:\s*\n([\s\S]*?)(?:\n\s*\n|$)/;
+            const repoUrl = extractInfoFromSection(bodyWithoutComments, repoUrlPattern);
+            
+            // Extract Project Name (optional)
+            const projectNamePattern = /\*\*Project Name\*\* \((?:optional|Optional)\):\s*\n([\s\S]*?)(?:\n\s*\n|$)/;
+            const projectName = extractInfoFromSection(bodyWithoutComments, projectNamePattern);
+            
+            // Extract Section using a more generic approach
+            let section = null;
+            
+            // Find all checked boxes with their context
+            const checkboxRegex = /- (?:\[x\] (.+)|(.+)\n\s+- \[x\] (.+))/g;
+            let match;
+            let checkedItems = [];
+            
+            while ((match = checkboxRegex.exec(issueBody)) !== null) {
+              if (match[1]) {
+                // This is a top-level checkbox
+                checkedItems.push({
+                  parent: null,
+                  item: match[1].trim()
+                });
+              } else if (match[2] && match[3]) {
+                // This is a nested checkbox
+                checkedItems.push({
+                  parent: match[2].trim(),
+                  item: match[3].trim()
+                });
+              }
+            }
+            
+            // Select the first checked item as the section
+            if (checkedItems.length > 0) {
+              const selectedItem = checkedItems[0];
+              
+              // If it's a nested item, use the item name directly
+              // For example: 'Framework' under 'Agent', or 'LLM Router' under 'Gateway'
+              section = selectedItem.item;
+              
+              console.log('Selected section:', section);
+            }
+            
+            // Set outputs
+            core.setOutput('repo-url', repoUrl);
+            core.setOutput('project-name', projectName);
+            core.setOutput('section', section);
+            
+            // Log the extracted information
+            console.log(`Repository URL: ${repoUrl}`);
+            console.log(`Project Name: ${projectName}`);
+            console.log(`Section: ${section}`);
+            
+            // Check if we have all required information
+            if (!repoUrl || !section) {
+              core.setFailed('Missing required information in the issue');
+              await github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: '❌ Could not process this request. Please make sure you have provided the GitHub Repository URL and selected a section.'
+              });
+              return false;
+            }
+            
+            return true;
+
+      - name: Create branch
+        if: steps.parse-issue.outputs.result == 'true'
+        run: |
+          BRANCH_NAME="add-project-issue-${{ github.event.issue.number }}"
+          git config --global user.name "GitHub Action"
+          git config --global user.email "action@github.com"
+          git checkout -b $BRANCH_NAME
+          echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
+
+      - name: Run project_request.py
+        run: |
+          if [ -n "${{ steps.parse-issue.outputs.project-name }}" ]; then
+            python project_request.py "${{ steps.parse-issue.outputs.section }}" "${{ steps.parse-issue.outputs.repo-url }}" --name "${{ steps.parse-issue.outputs.project-name }}"
+          else
+            python project_request.py "${{ steps.parse-issue.outputs.section }}" "${{ steps.parse-issue.outputs.repo-url }}"
+          fi
+
+      - name: Commit changes
+        run: |
+          git add README.md
+          git commit -m "Add ${{ steps.parse-issue.outputs.repo-url }} to ${{ steps.parse-issue.outputs.section }} section"
+          git push --set-upstream origin $BRANCH_NAME
+
+      - name: Create Pull Request
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const issueNumber = context.issue.number;
+            const branchName = process.env.BRANCH_NAME;
+            
+            const repoUrl = '${{ steps.parse-issue.outputs.repo-url }}';
+            const section = '${{ steps.parse-issue.outputs.section }}';
+            
+            // Get the repository name from the URL
+            const repoName = repoUrl.split('/').pop();
+            
+            // Create the PR
+            const pr = await github.rest.pulls.create({
+              owner,
+              repo,
+              title: `Add ${repoName} to ${section}`,
+              body: `fixes #${issueNumber}`,
+              head: branchName,
+              base: 'main'
+            });
+            
+            // Add comment to the issue
+            await github.rest.issues.createComment({
+              issue_number: issueNumber,
+              owner,
+              repo,
+              body: `✅ Pull Request created: #${pr.data.number}`
+            });
