@@ -60,38 +60,14 @@ jobs:
             const projectNamePattern = /\*\*Project Name\*\*:\s*\n([\s\S]*?)(?:\n\s*\n\*\*|$)/;
             const projectName = extractInfoFromSection(bodyWithoutComments, projectNamePattern);
             
-            // Extract Section using a more generic approach
+            // Extract Section
             let section = null;
             
-            // Find all checked boxes with their context
-            const checkboxRegex = /- (?:\[x\] (.+)|(.+)\n\s+- \[x\] (.+))/g;
-            let match;
-            let checkedItems = [];
+            // Find the first checked box with [x]
+            const checkboxMatch = issueBody.match(/- \[x\] (.+)/);
             
-            while ((match = checkboxRegex.exec(issueBody)) !== null) {
-              if (match[1]) {
-                // This is a top-level checkbox
-                checkedItems.push({
-                  parent: null,
-                  item: match[1].trim()
-                });
-              } else if (match[2] && match[3]) {
-                // This is a nested checkbox
-                checkedItems.push({
-                  parent: match[2].trim(),
-                  item: match[3].trim()
-                });
-              }
-            }
-            
-            // Select the first checked item as the section
-            if (checkedItems.length > 0) {
-              const selectedItem = checkedItems[0];
-              
-              // If it's a nested item, use the item name directly
-              // For example: 'Framework' under 'Agent', or 'LLM Router' under 'Gateway'
-              section = selectedItem.item;
-              
+            if (checkboxMatch) {
+              section = checkboxMatch[1].trim();
               console.log('Selected section:', section);
             }
             
@@ -112,7 +88,7 @@ jobs:
                 issue_number: context.issue.number,
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                body: '❌ Could not process this request. Please make sure you have provided the GitHub Repository URL, project name, and selected a section.'
+                body: '❌ Could not process this request. Please make sure you have provided the GitHub repo URL, project name, and selected a section.'
               });
               return false;
             }
