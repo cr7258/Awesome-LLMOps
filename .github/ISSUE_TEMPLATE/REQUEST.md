@@ -1,14 +1,35 @@
 ---
 name: Project Request
 about: Suggest a project to join the list
-title: ''
+title: 'Project Request: [PROJECT_NAME]'
 labels: documentation
 assignees: ''
-
 ---
 
-<!-- Please only use this template for submitting project requests -->
+**GitHub Repository URL**:
+<!-- Example: https://github.com/google/adk-python -->
 
-**What project you would like to add**:
+**Project Name** (optional):
+<!-- Example: Agent Development Kit (ADK) -->
 
-**Which category this project belongs to**:
+**Section to add this project**:
+
+- Agent
+    - [] Framework
+    - [] Tools
+- [] Alignment 
+- [] Application Orchestration Framework
+- [] Chat Framework
+- [] Database
+- [] Evaluation
+- [] FineTune
+- [] Gateway
+    - [] LLM Router
+    - [] API Gateway
+- Inference
+    - [] Inference Engine
+    - [] Inference Platform
+- [] MLOps
+- [] Observation
+- [] Output
+- [] Training
