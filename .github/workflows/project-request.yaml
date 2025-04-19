@@ -55,7 +55,7 @@ jobs:
             const repoUrlPattern = /\*\*GitHub Repository URL\*\*:\s*\n([\s\S]*?)(?:\n\s*\n|$)/;
             const repoUrl = extractInfoFromSection(bodyWithoutComments, repoUrlPattern);
             
-            // Extract Project Name (now required)
+            // Extract Project Name
             // Match content between **Project Name**: and the next **
             const projectNamePattern = /\*\*Project Name\*\*:\s*\n([\s\S]*?)(?:\n\s*\n\*\*|$)/;
             const projectName = extractInfoFromSection(bodyWithoutComments, projectNamePattern);
