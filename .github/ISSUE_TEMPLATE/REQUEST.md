@@ -1,7 +1,7 @@
 ---
 name: Project Request
 about: Suggest a project to join the list
-title: 'Project Request: [PROJECT_NAME]'
+title: 'Project Request: PROJECT_NAME'
 labels: documentation
 assignees: ''
 ---
@@ -15,21 +15,21 @@ assignees: ''
 **Section to add this project**:
 
 - Agent
-    - [] Framework
-    - [] Tools
-- [] Alignment 
-- [] Application Orchestration Framework
-- [] Chat Framework
-- [] Database
-- [] Evaluation
-- [] FineTune
-- [] Gateway
-    - [] LLM Router
-    - [] API Gateway
+    - [ ] Framework
+    - [ ] Tools
+- [ ] Alignment 
+- [ ] Application Orchestration Framework
+- [ ] Chat Framework
+- [ ] Database
+- [ ] Evaluation
+- [ ] FineTune
+- Gateway
+    - [ ] LLM Router
+    - [ ] API Gateway
 - Inference
-    - [] Inference Engine
-    - [] Inference Platform
-- [] MLOps
-- [] Observation
-- [] Output
-- [] Training
+    - [ ] Inference Engine
+    - [ ] Inference Platform
+- [ ] MLOps
+- [ ] Observation
+- [ ] Output
+- [ ] Training
