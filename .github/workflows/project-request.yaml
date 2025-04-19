@@ -7,10 +7,6 @@ jobs:
   process-project-request:
     if: contains(github.event.issue.title, 'Project Request:')
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      pull-requests: write
-      issues: write
 
     steps:
       - name: Checkout repository
