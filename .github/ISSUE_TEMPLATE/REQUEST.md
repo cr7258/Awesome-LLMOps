@@ -6,13 +6,13 @@ labels: documentation
 assignees: ''
 ---
 
-**GitHub Repository URL**:
+## GitHub Repository URL
 <!-- Example: https://github.com/google/adk-python -->
 
-**Project Name**:
+## Project Name
 <!-- Example: Agent Development Kit (ADK) -->
 
-**Section to add this project**:
+## Section to add this project
 
 - Agent
     - [ ] Framework

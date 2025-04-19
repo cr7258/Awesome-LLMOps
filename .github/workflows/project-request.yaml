@@ -52,12 +52,12 @@ jobs:
             const bodyWithoutComments = issueBody.replace(/<!--[\s\S]*?-->/g, '');
             
             // Extract GitHub Repository URL
-            const repoUrlPattern = /\*\*GitHub Repository URL\*\*:\s*\n([\s\S]*?)(?:\n\s*\n|$)/;
+            const repoUrlPattern = /## GitHub Repository URL\s*\n([\s\S]*?)(?:\n\s*\n##|$)/;
             const repoUrl = extractInfoFromSection(bodyWithoutComments, repoUrlPattern);
             
             // Extract Project Name
-            // Match content between **Project Name**: and the next **
-            const projectNamePattern = /\*\*Project Name\*\*:\s*\n([\s\S]*?)(?:\n\s*\n\*\*|$)/;
+            // Match content between ## Project Name and the next ##
+            const projectNamePattern = /## Project Name\s*\n([\s\S]*?)(?:\n\s*\n##|$)/;
             const projectName = extractInfoFromSection(bodyWithoutComments, projectNamePattern);
             
             // Extract Section
