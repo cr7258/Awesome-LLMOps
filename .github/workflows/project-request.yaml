@@ -27,21 +27,9 @@ jobs:
           script: |
             const issueBody = context.payload.issue.body;
             
-            // Function to extract information from a section
-            function extractInfoFromSection(body, sectionPattern) {
-              const section = body.match(sectionPattern);
-              if (!section || !section[1]) return null;
-              
-              // Split by lines and find the first non-empty line
-              const lines = section[1].split('\n');
-              for (const line of lines) {
-                const trimmedLine = line.trim();
-                if (trimmedLine && !trimmedLine.startsWith('<!--')) {
-                  return trimmedLine;
-                }
-              }
-              
-              return null;
+            function extractInfoFromPattern(body, pattern) {
+              const match = body.match(pattern);
+              return match ? match[1].trim() : null;
             }
             
             // First remove HTML comments from the issue body
@@ -49,12 +37,11 @@ jobs:
             
             // Extract GitHub Repository URL
             const repoUrlPattern = /## GitHub Repository URL\s*\n([\s\S]*?)(?:\n\s*\n##|$)/;
-            const repoUrl = extractInfoFromSection(bodyWithoutComments, repoUrlPattern);
+            const repoUrl = extractInfoFromPattern(bodyWithoutComments, repoUrlPattern);
             
             // Extract Project Name
-            // Match content between ## Project Name and the next ##
             const projectNamePattern = /## Project Name\s*\n([\s\S]*?)(?:\n\s*\n##|$)/;
-            const projectName = extractInfoFromSection(bodyWithoutComments, projectNamePattern);
+            const projectName = extractInfoFromPattern(bodyWithoutComments, projectNamePattern);
             
             // Extract Section
             let section = null;
