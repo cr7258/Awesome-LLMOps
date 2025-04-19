@@ -50,6 +50,7 @@
 
 ### Tools
 
+* **[Agent Development Kit (ADK)](https://github.com/google/adk-python)**: An open-source, code-first Python toolkit for building, evaluating, and deploying sophisticated AI agents with flexibility and control. ![Stars](https://img.shields.io/github/stars/google/adk-python.svg?style=flat&color=green) ![Contributors](https://img.shields.io/github/contributors/google/adk-python?color=green) ![LastCommit](https://img.shields.io/github/last-commit/google/adk-python?color=green)
 * **[Browser Use](https://github.com/browser-use/browser-use)**: Make websites accessible for AI agents. ![Stars](https://img.shields.io/github/stars/browser-use/browser-use.svg?style=flat&color=green) ![Contributors](https://img.shields.io/github/contributors/browser-use/browser-use?color=green) ![LastCommit](https://img.shields.io/github/last-commit/browser-use/browser-use?color=green)
 * **[Graphiti](https://github.com/getzep/graphiti)**: Build Real-Time Knowledge Graphs for AI Agents. ![Stars](https://img.shields.io/github/stars/getzep/graphiti.svg?style=flat&color=green) ![Contributors](https://img.shields.io/github/contributors/getzep/graphiti?color=green) ![LastCommit](https://img.shields.io/github/last-commit/getzep/graphiti?color=green)
 * **[Mem0](https://github.com/mem0ai/mem0)**: The Memory layer for AI Agents. ![Stars](https://img.shields.io/github/stars/mem0ai/mem0.svg?style=flat&color=green) ![Contributors](https://img.shields.io/github/contributors/mem0ai/mem0?color=green) ![LastCommit](https://img.shields.io/github/last-commit/mem0ai/mem0?color=green)
